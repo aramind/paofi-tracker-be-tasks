@@ -27,7 +27,8 @@ const taskController = {
     }
   },
   // TODO: controller | GET | tasks/:type?date_to=date&date_from=date | desc: Get all tasks with a specific type | req: {task type, date_to, date_from} | res: List of all tasks with a specific type
-  // TODO: controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
+
+  // controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
   addTask: async (req, res) => {
     console.log("addTask controller reached");
     try {
