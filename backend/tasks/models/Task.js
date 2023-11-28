@@ -9,6 +9,10 @@ const taskSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  label: {
+    type: String,
+    required: true,
+  },
   Metadata: {
     type: Object,
     required: true,
