@@ -31,10 +31,10 @@ const taskController = {
   addTask: async (req, res) => {
     console.log("addTask controller reached");
     try {
-      const { type, userId, Metadata } = req.body;
+      const { type, userId, label, Metadata } = req.body;
 
       // check if required fields are present?
-      if (!type || !userId || !Metadata) {
+      if (!type || !userId || !label || !Metadata) {
         return res.status(400).json({
           success: false,
           message: "One or more of the required fields are missing",
@@ -42,10 +42,22 @@ const taskController = {
         });
       }
 
+      const existingTask = await Task.findOne({
+        label,
+      });
+
+      if (existingTask) {
+        return res.status(403).json({
+          success: false,
+          message: "Task label already exist",
+        });
+      }
+
       // creating and adding the task
       const newTask = new Task({
         type,
         userId: userId.toString(), // question for reviewer: do I need to include pa this conditional ?
+        label,
         Metadata: typeof Metadata === "object" ? Metadata : { Metadata }, //question for reviewer: do we need to include pa this conditional?
       });
 
