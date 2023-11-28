@@ -9,7 +9,7 @@ const taskSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  metaData: {
+  Metadata: {
     type: Object,
     required: true,
   },

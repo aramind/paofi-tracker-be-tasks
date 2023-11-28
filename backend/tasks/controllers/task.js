@@ -2,7 +2,7 @@ const Task = require("../models/Task");
 const handleError = require("../helpers/errorCatcher");
 
 const taskController = {
-  // TODO: controller | GET | tasks/:userId | desc: Get all tasks for a specific user | req: {userId} | res: List of tasks for a specific user
+  // controller | GET | tasks/:userId | desc: Get all tasks for a specific user | req: {userId} | res: List of tasks for a specific user
   getTaskByUserId: async (req, res) => {
     // console.log(req.params);
     try {
@@ -28,6 +28,38 @@ const taskController = {
   },
   // TODO: controller | GET | tasks/:type?date_to=date&date_from=date | desc: Get all tasks with a specific type | req: {task type, date_to, date_from} | res: List of all tasks with a specific type
   // TODO: controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
+  addTask: async (req, res) => {
+    console.log("addTask controller reached");
+    try {
+      const { type, userId, Metadata } = req.body;
+
+      // check if required fields are present?
+      if (!type || !userId || !Metadata) {
+        return res.status(400).json({
+          success: false,
+          message: "One or more of the required fields are missing",
+          data: null,
+        });
+      }
+
+      // creating and adding the task
+      const newTask = new Task({
+        type,
+        userId: userId.toString(), // question for reviewer: do I need to include pa this conditional ?
+        Metadata: typeof Metadata === "object" ? Metadata : { Metadata }, //question for reviewer: do we need to include pa this conditional?
+      });
+
+      const createdTask = await newTask.save();
+
+      res.status(201).json({
+        success: true,
+        message: "Task created successfully",
+        data: createdTask,
+      });
+    } catch (error) {
+      handleError(res, error);
+    }
+  },
   // TODO: controller | PUT | tasks | desc: updates a task | req: {updated info} | res: updated task
 };
 
