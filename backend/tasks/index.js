@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const testTaskRouter = require("./routes/testTaskRouter");
+const taskRouter = require("./routes/taskRouter");
 
 // env
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // routers
 app.use("/test-task", testTaskRouter);
+app.use("/tasks", taskRouter);
 
 // if not found
 app.use((req, res) =>
