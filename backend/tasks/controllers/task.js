@@ -1,4 +1,5 @@
-const Task = require("../models/Task");
+const TaskModel = require("../models/Task");
+const Task = require("../objects/Task");
 const handleError = require("../helpers/errorCatcher");
 
 const taskController = {
@@ -8,8 +9,8 @@ const taskController = {
     // console.log(req.params);
     try {
       const { userId } = req.params;
-
-      const userTasks = await Task.find({ userId });
+      const task = new Task(TaskModel);
+      const userTasks = await task.getTaskByUserId(userId);
 
       if (userTasks.length === 0) {
         return res.status(404).json({
