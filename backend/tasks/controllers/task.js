@@ -1,7 +1,6 @@
 const Task = require("../models/Task");
 // const Task = require("../objects/Task");
 const handleError = require("../helpers/errorCatcher");
-const sendResponse = require("../helpers/sendResponse");
 const taskServices = require("../services/taskServices");
 
 const taskController = {
@@ -11,19 +10,13 @@ const taskController = {
     // console.log(req.params);
     try {
       const { userId } = req.params;
-
       const userTasks = await taskServices.getTaskByUserId(userId);
-
-      if (userTasks.length === 0) {
-        return sendResponse(
-          res,
-          404,
-          false,
-          "No tasks found for the given user ID"
-        );
-      }
-
-      sendResponse(res, 200, true, "Tasks retrieved successfully", userTasks);
+      taskServices.sendResponseToGettingDocsRequests(
+        res,
+        userTasks,
+        "Tasks retrieved successfully",
+        "No tasks found for the given user ID"
+      );
     } catch (error) {
       handleError(res, error);
     }
