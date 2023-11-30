@@ -1,18 +1,17 @@
 const handleError = require("../helpers/errorCatcher");
-const Task = require("../models/Task");
 
-const getTaskByUserId = async (userId) => {
+const getTaskByUserId = async (userId, model) => {
   try {
-    return await Task.find({ userId });
+    return await model.find({ userId });
   } catch (error) {
     handleError(res, error);
   }
 };
 
 // for creating tasks
-const addTask = async (params) => {
+const addTask = async (params, model) => {
   try {
-    const newTask = new Task(params);
+    const newTask = new model(params);
     const createdTask = await newTask.save();
     return createdTask;
   } catch (error) {
@@ -21,9 +20,9 @@ const addTask = async (params) => {
 };
 
 // find taskByParams
-const findTaskByParams = async (params) => {
+const findTaskByParams = async (params, model) => {
   try {
-    return await Task.findOne(params);
+    return await model.findOne(params);
   } catch (error) {
     handleError(res, error);
   }
@@ -38,8 +37,11 @@ const findTaskById = async (taskId) => {
   }
 };
 // update task by ID
-const updateTaskById = async ({ taskId, type, label, userId, Metadata }) => {
-  const existingTask = await Task.findById(taskId);
+const updateTaskById = async (
+  { taskId, type, label, userId, Metadata },
+  model
+) => {
+  const existingTask = await model.findById(taskId);
 
   if (!existingTask) {
     return { exist: false, updatedTask: null };

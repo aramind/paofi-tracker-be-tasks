@@ -11,7 +11,8 @@ const taskController = {
     // console.log(req.params);
     try {
       const { userId } = req.params;
-      const userTasks = await taskServices.getTaskByUserId(userId);
+      const userTasks = await taskServices.getTaskByUserId(userId, Task);
+      // const userTasks = await Task.find({ userId });
 
       if (userTasks.length === 0) {
         sendResponse.failed(
@@ -51,19 +52,23 @@ const taskController = {
         );
       }
 
-      const existingTask = await taskServices.findTaskByParams({ label });
+      const existingTask = await taskServices.findTaskByParams({ label }, Task);
+      // const existingTask = await Task.findOne({ label });
 
       if (existingTask) {
         return sendResponse.failed(res, "Task label already exist", null, 403);
       }
 
       // creating and adding the task
-      const createdTask = await taskServices.addTask({
-        type,
-        userId: userId.toString(),
-        label,
-        Metadata: typeof Metadata === "object" ? Metadata : { Metadata },
-      });
+      const createdTask = await taskServices.addTask(
+        {
+          type,
+          userId: userId.toString(),
+          label,
+          Metadata: typeof Metadata === "object" ? Metadata : { Metadata },
+        },
+        Task
+      );
 
       sendResponse.success(res, "Task created successfully", createdTask, 201);
     } catch (error) {
@@ -73,7 +78,6 @@ const taskController = {
   //controller | PUT | tasks | desc: updates a task | req: {updated info} | res: updated task
   // localhost:4000/tasks
   updateTask: async (req, res) => {
-    console.log("UPDATING TASK");
     try {
       // const { taskId } = req.params;
 
@@ -91,7 +95,8 @@ const taskController = {
 
       // Find the task by id and update
       const { exist, updatedTask } = await taskServices.updateTaskById(
-        req.body
+        req.body,
+        Task
       );
 
       if (!exist) {
