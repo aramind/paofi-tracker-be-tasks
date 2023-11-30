@@ -2,6 +2,7 @@ const Task = require("../models/Task");
 // const Task = require("../objects/Task");
 const handleError = require("../helpers/errorCatcher");
 const taskServices = require("../services/taskServices");
+const sendResponse = require("../helpers/sendResponse");
 
 const taskController = {
   // controller | GET | tasks/:userId | desc: Get all tasks for a specific user | req: {userId} | res: List of tasks for a specific user
@@ -11,12 +12,21 @@ const taskController = {
     try {
       const { userId } = req.params;
       const userTasks = await taskServices.getTaskByUserId(userId);
-      taskServices.sendResponseToGettingDocsRequests(
-        res,
-        userTasks,
-        "Tasks retrieved successfully",
-        "No tasks found for the given user ID"
-      );
+
+      if (userTasks.length === 0) {
+        sendResponse.failed(
+          res,
+          "No tasks found for the given user ID",
+          null,
+          404
+        );
+      } else
+        sendResponse.success(
+          res,
+          "Tasks retrieved successfully",
+          userTasks,
+          200
+        );
     } catch (error) {
       handleError(res, error);
     }
@@ -33,39 +43,29 @@ const taskController = {
 
       // check if required fields are present?
       if (!type || !userId || !label || !Metadata) {
-        return res.status(400).json({
-          success: false,
-          message: "One or more of the required fields are missing",
-          data: null,
-        });
+        return sendResponse.failed(
+          res,
+          "One or more of the required fields are missing",
+          null,
+          400
+        );
       }
 
-      const existingTask = await Task.findOne({
-        label,
-      });
+      const existingTask = await taskServices.findTaskByParams({ label });
 
       if (existingTask) {
-        return res.status(403).json({
-          success: false,
-          message: "Task label already exist",
-        });
+        return sendResponse.failed(res, "Task label already exist", null, 403);
       }
 
       // creating and adding the task
-      const newTask = new Task({
+      const createdTask = await taskServices.addTask({
         type,
-        userId: userId.toString(), // question for reviewer: do I need to include pa this conditional ?
+        userId: userId.toString(),
         label,
-        Metadata: typeof Metadata === "object" ? Metadata : { Metadata }, //question for reviewer: do I need to include pa this conditional?
+        Metadata: typeof Metadata === "object" ? Metadata : { Metadata },
       });
 
-      const createdTask = await newTask.save();
-
-      res.status(201).json({
-        success: true,
-        message: "Task created successfully",
-        data: createdTask,
-      });
+      sendResponse.success(res, "Task created successfully", createdTask, 201);
     } catch (error) {
       handleError(res, error);
     }

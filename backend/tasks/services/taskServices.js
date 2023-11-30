@@ -10,19 +10,29 @@ const getTaskByUserId = async (userId) => {
   }
 };
 
-const sendResponseToGettingDocsRequests = (
-  res,
-  requestedDocs,
-  successMessage,
-  failureMessage
-) => {
-  if (requestedDocs.length === 0) {
-    return sendResponse(res, 404, false, failureMessage);
-  } else sendResponse(res, 200, true, successMessage, requestedDocs);
+// for creating tasks
+const addTask = async (params) => {
+  try {
+    const newTask = new Task(params);
+    const createdTask = await newTask.save();
+    return createdTask;
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+// find task
+const findTaskByParams = async (params) => {
+  try {
+    return await Task.findOne(params);
+  } catch (error) {
+    handleError(res, error);
+  }
 };
 
 const taskServices = {
   getTaskByUserId,
-  sendResponseToGettingDocsRequests,
+  addTask,
+  findTaskByParams,
 };
 module.exports = taskServices;

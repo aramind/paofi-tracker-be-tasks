@@ -1,8 +1,13 @@
-const handleError = (res, error) => {
+const handleError = (
+  res,
+  error,
+  status = 500,
+  message = "Something went wrong! Try again later."
+) => {
   console.log(error);
-  res.status(500).json({
+  res.status(status).json({
     success: false,
-    message: "Something went wrong! Try again later",
+    message,
   });
 };
 
