@@ -25,7 +25,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routers
-app.use("/test-task", testTaskRouter);
 app.use("/tasks", taskRouter);
 
 // if not found
