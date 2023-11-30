@@ -1,6 +1,8 @@
-const TaskModel = require("../models/Task");
-const Task = require("../objects/Task");
+const Task = require("../models/Task");
+// const Task = require("../objects/Task");
 const handleError = require("../helpers/errorCatcher");
+const sendResponse = require("../helpers/sendResponse");
+const taskServices = require("../services/taskServices");
 
 const taskController = {
   // controller | GET | tasks/:userId | desc: Get all tasks for a specific user | req: {userId} | res: List of tasks for a specific user
@@ -9,25 +11,24 @@ const taskController = {
     // console.log(req.params);
     try {
       const { userId } = req.params;
-      const task = new Task(TaskModel);
-      const userTasks = await task.getTaskByUserId(userId);
+
+      const userTasks = await taskServices.getTaskByUserId(userId);
 
       if (userTasks.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "No tasks found for the give user ID",
-        });
+        return sendResponse(
+          res,
+          404,
+          false,
+          "No tasks found for the given user ID"
+        );
       }
 
-      res.status(200).json({
-        success: true,
-        message: "Tasks retrieved successfully",
-        data: userTasks,
-      });
+      sendResponse(res, 200, true, "Tasks retrieved successfully", userTasks);
     } catch (error) {
       handleError(res, error);
     }
   },
+
   // TODO: controller | GET | tasks/:type?date_to=date&date_from=date | desc: Get all tasks with a specific type | req: {task type, date_to, date_from} | res: List of all tasks with a specific type
 
   // controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
