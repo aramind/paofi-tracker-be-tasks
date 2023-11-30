@@ -5,7 +5,8 @@ const handleError = (
   message = "Something went wrong! Try again later."
 ) => {
   console.log(error);
-  res.status(status).json({
+  res.status(status);
+  res.json({
     success: false,
     message,
   });

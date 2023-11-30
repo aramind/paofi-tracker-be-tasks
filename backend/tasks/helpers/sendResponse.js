@@ -4,7 +4,8 @@ const success = (
   data = null,
   status = 200
 ) => {
-  res.status(status).json({
+  res.status(status);
+  res.json({
     success: true,
     message,
     data,
@@ -17,7 +18,8 @@ const failed = (
   data = null,
   status = 200
 ) => {
-  res.status(status).json({
+  res.status(status);
+  res.json({
     success: false,
     message,
     data,
