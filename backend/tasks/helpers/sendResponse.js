@@ -28,4 +28,5 @@ const sendResponse = {
   success,
   failed,
 };
+
 module.exports = sendResponse;

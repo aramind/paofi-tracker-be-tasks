@@ -72,7 +72,6 @@ const taskController = {
   },
   //controller | PUT | tasks | desc: updates a task | req: {updated info} | res: updated task
   // localhost:4000/tasks
-  // NOTE for reviewer: why not do it by adding the taskId via params to determine which existing (if there is one) task to update? is it better to include the taskId in the req.body? :)
   updateTask: async (req, res) => {
     console.log("UPDATING TASK");
     try {
@@ -82,41 +81,29 @@ const taskController = {
 
       // check for fields
       if (!taskId || (!type && !label && !userId && !Metadata)) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Invalid Request. Provide a valid task ID and at least one field to update.",
-          data: null,
-        });
+        return sendResponse.failed(
+          res,
+          "Invalid Request. Provide a valid task ID and at least one field to update.",
+          null,
+          400
+        );
       }
 
-      // Find the task by id
-      const existingTask = await Task.findById(taskId);
+      // Find the task by id and update
+      const { exist, updatedTask } = await taskServices.updateTaskById(
+        req.body
+      );
 
-      if (!existingTask) {
-        return res.status(404).json({
-          success: false,
-          message: "Task not found",
-          data: null,
-        });
+      if (!exist) {
+        sendResponse.failed(res, "Task not found", null, 404);
+      } else {
+        sendResponse.success(
+          res,
+          "Task updated successfully",
+          updatedTask,
+          200
+        );
       }
-
-      // updates the task
-      if (type) existingTask.type = type;
-      if (label) existingTask.label = label;
-      if (userId) existingTask.userId = userId.toString();
-      if (Metadata)
-        existingTask.Metadata =
-          typeof Metadata === "object" ? Metadata : { Metadata };
-
-      // saving the updated task
-      const updatedTask = await existingTask.save();
-
-      res.status(200).json({
-        success: true,
-        message: "Task updated successfully",
-        data: updatedTask,
-      });
     } catch (error) {
       handleError(res, error);
     }

@@ -1,5 +1,4 @@
 const handleError = require("../helpers/errorCatcher");
-const sendResponse = require("../helpers/sendResponse");
 const Task = require("../models/Task");
 
 const getTaskByUserId = async (userId) => {
@@ -21,7 +20,7 @@ const addTask = async (params) => {
   }
 };
 
-// find task
+// find taskByParams
 const findTaskByParams = async (params) => {
   try {
     return await Task.findOne(params);
@@ -30,9 +29,38 @@ const findTaskByParams = async (params) => {
   }
 };
 
+// find task by Id
+const findTaskById = async (taskId) => {
+  try {
+    return await Task.findById(taskId);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+// update task by ID
+const updateTaskById = async ({ taskId, type, label, userId, Metadata }) => {
+  const existingTask = await Task.findById(taskId);
+
+  if (!existingTask) {
+    return { exist: false, updatedTask: null };
+  }
+
+  if (type) existingTask.type = type;
+  if (label) existingTask.label = label;
+  if (userId) existingTask.userId = userId.toString();
+  if (Metadata)
+    existingTask.Metadata =
+      typeof Metadata === "object" ? Metadata : { Metadata };
+
+  return { exist: true, updatedTask: await existingTask.save() };
+};
+
 const taskServices = {
   getTaskByUserId,
   addTask,
   findTaskByParams,
+  findTaskById,
+  updateTaskById,
 };
+
 module.exports = taskServices;
