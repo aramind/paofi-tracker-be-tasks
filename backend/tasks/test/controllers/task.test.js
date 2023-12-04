@@ -8,7 +8,7 @@ const sendResponse = require("../../helpers/sendResponse");
 jest.mock("../../services/taskServices", () => {
   const mockedFunctions = {};
 
-  // List of functions you want to mock
+  // List of functions to mock
   const functionsToMock = [
     "getTaskByUserId",
     "getTaskByParams",
