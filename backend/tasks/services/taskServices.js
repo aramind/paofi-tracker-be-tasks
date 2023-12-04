@@ -1,10 +1,16 @@
-const handleError = require("../helpers/errorCatcher");
-
 const getTaskByUserId = async (userId, model) => {
   try {
     return await model.find({ userId });
   } catch (error) {
-    handleError(res, error);
+    throw error;
+  }
+};
+
+const getTaskByParams = async (params, model) => {
+  try {
+    return await model.find(params);
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -15,7 +21,7 @@ const addTask = async (params, model) => {
     const createdTask = await newTask.save();
     return createdTask;
   } catch (error) {
-    handleError(res, error);
+    throw error;
   }
 };
 
@@ -24,7 +30,7 @@ const findTaskByParams = async (params, model) => {
   try {
     return await model.findOne(params);
   } catch (error) {
-    handleError(res, error);
+    throw error;
   }
 };
 
@@ -33,9 +39,10 @@ const findTaskById = async (taskId) => {
   try {
     return await Task.findById(taskId);
   } catch (error) {
-    handleError(res, error);
+    throw error;
   }
 };
+
 // update task by ID
 const updateTaskById = async (
   { taskId, type, label, userId, Metadata },
@@ -59,6 +66,7 @@ const updateTaskById = async (
 
 const taskServices = {
   getTaskByUserId,
+  getTaskByParams,
   addTask,
   findTaskByParams,
   findTaskById,

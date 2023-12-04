@@ -26,9 +26,24 @@ const failed = (
   });
 };
 
+const error = (
+  res,
+  error,
+  message = "Something went wrong! Try again later.",
+  status = 500
+) => {
+  res.status(status);
+  res.json({
+    success: false,
+    message,
+    error,
+  });
+};
+
 const sendResponse = {
   success,
   failed,
+  error,
 };
 
 module.exports = sendResponse;

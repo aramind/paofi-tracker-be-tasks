@@ -5,14 +5,28 @@ const taskServices = require("../services/taskServices");
 const sendResponse = require("../helpers/sendResponse");
 
 const taskController = {
+  // controller | GET | tasks?type= | desc: Get all tasks of specific type | res: List of tasks of specific type
+  // localhost:4000/tasks/general
+  getTask: async (req, res) => {
+    try {
+      const tasks = await taskServices.getTaskByParams(req.query, Task);
+
+      if (tasks.length === 0) {
+        sendResponse.failed(res, "No tasks found", null, 404);
+      } else
+        sendResponse.success(res, "Tasks retrieved successfully", tasks, 200);
+    } catch (error) {
+      sendResponse.error(res, error);
+    }
+  },
+
   // controller | GET | tasks/:userId | desc: Get all tasks for a specific user | req: {userId} | res: List of tasks for a specific user
   // localhost:4000/tasks/1234
   getTaskByUserId: async (req, res) => {
-    // console.log(req.params);
     try {
-      const { userId } = req.params;
-      const userTasks = await taskServices.getTaskByUserId(userId, Task);
-      // const userTasks = await Task.find({ userId });
+      // const { userId } = req.params;
+      // const userTasks = await taskServices.getTaskByUserId(userId, Task);
+      const userTasks = await taskServices.getTaskByParams(req.params, Task);
 
       if (userTasks.length === 0) {
         sendResponse.failed(
@@ -29,7 +43,7 @@ const taskController = {
           200
         );
     } catch (error) {
-      handleError(res, error);
+      sendResponse.error(res, error);
     }
   },
 
@@ -38,7 +52,6 @@ const taskController = {
   // controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
   // localhost:4000/tasks
   addTask: async (req, res) => {
-    console.log("addTask controller reached");
     try {
       const { type, userId, label, Metadata } = req.body;
 
@@ -72,7 +85,7 @@ const taskController = {
 
       sendResponse.success(res, "Task created successfully", createdTask, 201);
     } catch (error) {
-      handleError(res, error);
+      sendResponse.error(res, error);
     }
   },
   //controller | PUT | tasks | desc: updates a task | req: {updated info} | res: updated task
@@ -110,7 +123,7 @@ const taskController = {
         );
       }
     } catch (error) {
-      handleError(res, error);
+      sendResponse.error(res, error);
     }
   },
 };

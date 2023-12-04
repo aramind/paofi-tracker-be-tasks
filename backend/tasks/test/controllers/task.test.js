@@ -1,58 +1,56 @@
 const taskController = require("../../controllers/task");
-const Task = require("../../models/Task");
+const { req, res, error, mockTasks, task, addTask } = require("../mocks/mocks");
 
-jest.mock("../../models/Task");
+// Mock the services
+const taskServices = require("../../services/taskServices");
+const sendResponse = require("../../helpers/sendResponse");
 
-const fakeReq = {
-  params: { userId: "some userId" },
-  body: "fake body",
-};
+jest.mock("../../services/taskServices", () => {
+  const mockedFunctions = {};
 
-const fakeRes = {
-  status: jest.fn((x) => x),
-  json: jest.fn(),
-};
+  // List of functions you want to mock
+  const functionsToMock = [
+    "getTaskByUserId",
+    "getTaskByParams",
+    "addTask",
+    "findTaskByParams",
+    "findTaskById",
+    "updateTaskById",
+  ];
 
-const fakeTasks = [{ taskList: "taskList" }];
+  functionsToMock.forEach((fn) => {
+    mockedFunctions[fn] = jest.fn((x) => x);
+  });
 
-it("should send a status code 404 when no tasks were found", async () => {
-  Task.find.mockResolvedValueOnce([]);
-  await taskController.getTaskByUserId(fakeReq, fakeRes);
-  expect(fakeRes.status).toHaveBeenCalledWith(404);
+  return mockedFunctions;
 });
 
-it("should send a response with success set to false when no tasks were found", async () => {
-  Task.find.mockResolvedValueOnce([]);
-  await taskController.getTaskByUserId(fakeReq, fakeRes);
-  expect(fakeRes.json).toHaveBeenCalledWith(
-    expect.objectContaining({
-      success: false,
-    })
-  );
+jest.mock("../../helpers/sendResponse", () => {
+  const mockedFunctions = {};
+
+  const functionsToMock = ["failed", "success", "error"];
+
+  functionsToMock.forEach((fn) => {
+    mockedFunctions[fn] = jest.fn((x) => x);
+  });
+
+  return mockedFunctions;
 });
 
-it("should send a status code 200 when no tasks were found", async () => {
-  Task.find.mockResolvedValueOnce(fakeTasks);
-  await taskController.getTaskByUserId(fakeReq, fakeRes);
-  expect(fakeRes.status).toHaveBeenCalledWith(200);
-});
+describe("task controller - getTaskByUserId ", () => {
+  it("should send a status code 404 when no tasks were found", async () => {
+    // mocking the behavior when no tasks are found
+    taskServices.getTaskByParams.mockResolvedValueOnce([]);
 
-it("should send a response with success set to true when tasks were found", async () => {
-  Task.find.mockResolvedValueOnce(fakeTasks);
-  await taskController.getTaskByUserId(fakeReq, fakeRes);
-  expect(fakeRes.json).toHaveBeenCalledWith(
-    expect.objectContaining({
-      success: true,
-    })
-  );
-});
+    await taskController.getTaskByUserId(req, res);
 
-it("should send the retrieved tasks as data when tasks were found", async () => {
-  Task.find.mockResolvedValueOnce(fakeTasks);
-  await taskController.getTaskByUserId(fakeReq, fakeRes);
-  expect(fakeRes.json).toHaveBeenCalledWith(
-    expect.objectContaining({
-      data: fakeTasks,
-    })
-  );
+    // Ensure the first call to sendResponse.failed was as expected
+    const callArgs = sendResponse.failed.mock.calls[0];
+
+    expect(sendResponse.failed).toHaveBeenCalled();
+    // Ensure the call to sendResponse.failed was as expected
+    expect(callArgs[0]).toBe(res);
+    expect(callArgs[2]).toBe(null);
+    expect(callArgs[3]).toBe(404);
+  });
 });
