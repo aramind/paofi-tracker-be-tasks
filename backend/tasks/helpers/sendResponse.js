@@ -12,12 +12,7 @@ const success = (
   });
 };
 
-const failed = (
-  res,
-  message = "Request Successful",
-  data = null,
-  status = 200
-) => {
+const failed = (res, message = "Request Failed", data = null, status = 500) => {
   res.status(status);
   res.json({
     success: false,

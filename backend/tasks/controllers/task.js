@@ -1,6 +1,4 @@
 const Task = require("../models/Task");
-// const Task = require("../objects/Task");
-const handleError = require("../helpers/errorCatcher");
 const taskServices = require("../services/taskServices");
 const sendResponse = require("../helpers/sendResponse");
 
@@ -60,8 +58,7 @@ const taskController = {
         return sendResponse.failed(
           res,
           "One or more of the required fields are missing",
-          null,
-          400
+          null
         );
       }
 
