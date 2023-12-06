@@ -25,6 +25,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // routers
 app.use("/tasks", taskRouter);
+app.get("/", async (req, res) => {
+  try {
+    const htmlResponse = `<h2>TASKS API</h2>`;
+    res.send(htmlResponse);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 // if not found
 app.use((req, res) =>
