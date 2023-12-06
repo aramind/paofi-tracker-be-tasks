@@ -50,8 +50,6 @@ const taskController = {
     }
   },
 
-  // TODO: controller | GET | tasks/:type?date_to=date&date_from=date | desc: Get all tasks with a specific type | req: {task type, date_to, date_from} | res: List of all tasks with a specific type
-
   // controller | POST | tasks | desc: create a task | req: {task type, userId, metadata} | res: created task
   // localhost:4000/tasks
   addTask: async (req, res) => {
@@ -133,6 +131,17 @@ const taskController = {
     } catch (error) {
       console.log(error);
       sendResponse.error(res, error);
+    }
+  },
+
+  // displaying home on API
+  displayHome: async (req, res) => {
+    try {
+      const htmlResponse = `<h2>TASKS API</h2>`;
+      res.send(htmlResponse);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
     }
   },
 };
