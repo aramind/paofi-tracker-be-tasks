@@ -2,6 +2,7 @@ const Task = require("../models/Task");
 const taskServices = require("../services/taskServices");
 const sendResponse = require("../helpers/sendResponse");
 const convertStringToDate = require("../helpers/convertStringToDate");
+const generateHtmlResponse = require("../helpers/generateHtmlResponse");
 
 const taskController = {
   // controller | GET | tasks?type= | desc: Get all tasks of specific type | res: List of tasks of specific type
@@ -137,7 +138,7 @@ const taskController = {
   // displaying home on API
   displayHome: async (req, res) => {
     try {
-      const htmlResponse = `<h2>TASKS API</h2>`;
+      const htmlResponse = generateHtmlResponse();
       res.send(htmlResponse);
     } catch (error) {
       console.error(error);
