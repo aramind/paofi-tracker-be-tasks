@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const taskRouter = require("./routes/taskRouter");
+const generateHtmlResponse = require("./helpers/generateHtmlResponse");
 
 // env
 dotenv.config();
@@ -27,14 +28,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/tasks", taskRouter);
 app.get("/", async (req, res) => {
   try {
-    const htmlResponse = `<h2>TASKS API</h2>`;
+    const htmlResponse = generateHtmlResponse();
     res.send(htmlResponse);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 // if not found
 app.use((req, res) =>
   res.status(404).json({ success: false, message: "Not Found" })
