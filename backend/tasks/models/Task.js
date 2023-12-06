@@ -13,6 +13,15 @@ const taskSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  completed: {
+    status: {
+      type: Boolean,
+      default: false,
+    },
+    date: {
+      type: Date,
+    },
+  },
   Metadata: {
     type: Object,
     required: true,

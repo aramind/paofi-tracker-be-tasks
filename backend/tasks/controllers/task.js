@@ -1,13 +1,18 @@
 const Task = require("../models/Task");
 const taskServices = require("../services/taskServices");
 const sendResponse = require("../helpers/sendResponse");
+const convertStringToDate = require("../helpers/convertStringToDate");
 
 const taskController = {
   // controller | GET | tasks?type= | desc: Get all tasks of specific type | res: List of tasks of specific type
   // localhost:4000/tasks/general
   getTask: async (req, res) => {
     try {
-      const tasks = await taskServices.getTaskByParams(req.query, Task);
+      const dynamicRouteParams = { ...req.params };
+      const dynamicQueryParams = { ...req.query };
+
+      const params = { ...dynamicRouteParams, ...dynamicQueryParams };
+      const tasks = await taskServices.getTaskByParams(params, Task);
 
       if (tasks.length === 0) {
         sendResponse.failed(res, "No tasks found", null, 404);
@@ -82,6 +87,7 @@ const taskController = {
 
       sendResponse.success(res, "Task created successfully", createdTask, 201);
     } catch (error) {
+      console.log(error.message);
       sendResponse.error(res, error);
     }
   },
@@ -91,10 +97,10 @@ const taskController = {
     try {
       // const { taskId } = req.params;
 
-      const { taskId, type, label, userId, Metadata } = req.body;
+      const { taskId, type, label, userId, Metadata, completed } = req.body;
 
       // check for fields
-      if (!taskId || (!type && !label && !userId && !Metadata)) {
+      if (!taskId || (!type && !label && !userId && !Metadata && !completed)) {
         return sendResponse.failed(
           res,
           "Invalid Request. Provide a valid task ID and at least one field to update.",
@@ -103,9 +109,14 @@ const taskController = {
         );
       }
 
+      // check completed if it is true there must be a date
+      if (completed?.status && completed.date === undefined) {
+        completed.date = new Date();
+      }
+
       // Find the task by id and update
       const { exist, updatedTask } = await taskServices.updateTaskById(
-        req.body,
+        { taskId, type, label, userId, Metadata, completed },
         Task
       );
 
@@ -120,6 +131,7 @@ const taskController = {
         );
       }
     } catch (error) {
+      console.log(error);
       sendResponse.error(res, error);
     }
   },

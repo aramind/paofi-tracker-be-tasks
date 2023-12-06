@@ -45,7 +45,7 @@ const findTaskById = async (taskId) => {
 
 // update task by ID
 const updateTaskById = async (
-  { taskId, type, label, userId, Metadata },
+  { taskId, type, label, userId, Metadata, completed },
   model
 ) => {
   const existingTask = await model.findById(taskId);
@@ -60,6 +60,7 @@ const updateTaskById = async (
   if (Metadata)
     existingTask.Metadata =
       typeof Metadata === "object" ? Metadata : { Metadata };
+  if (completed) existingTask.completed = completed;
 
   return { exist: true, updatedTask: await existingTask.save() };
 };
